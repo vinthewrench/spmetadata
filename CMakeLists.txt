@@ -16,7 +16,6 @@ find_package(Threads)
 set(SOURCES
 	src/main.cpp
 	)
-
  
 add_executable(spmetadata ${SOURCES})
 
