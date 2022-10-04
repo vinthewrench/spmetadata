@@ -4,6 +4,11 @@ set(CMAKE_CXX_FLAGS "-Wall -std=c++11  ${EXTRA_FLAGS}")
 
 cmake_minimum_required(VERSION 3.0)
 
+
+if ( ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR} )
+    message( FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there. You may need to remove CMakeCache.txt." )
+endif()
+
 project(spmetadata)
    
 find_package(Threads)
@@ -28,6 +33,13 @@ set_target_properties(spmetadata PROPERTIES
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
+include_directories(
+    ${EXTRA_INCLUDES} )
+
+link_directories(
+    ${EXTRA_INCLUDES}
+    )
+
 target_link_libraries(spmetadata  PRIVATE   Threads::Threads  ${EXTRA_LIBS} )
 
 target_include_directories(spmetadata
@@ -37,4 +49,4 @@ target_include_directories(spmetadata
 
 set(CMAKE_BINARY_DIR "bin")
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
- 
+
