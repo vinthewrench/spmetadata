@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2EE8AF8828ECBD37004CC59C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EE8AF8728ECBD37004CC59C /* main.cpp */; };
 		2EE8AF9128ECC27A004CC59C /* MetaDataMgr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EE8AF8F28ECC27A004CC59C /* MetaDataMgr.cpp */; };
+		2EE8AF9528ECD91E004CC59C /* dbuf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EE8AF9428ECD91E004CC59C /* dbuf.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -30,6 +31,8 @@
 		2EE8AF8F28ECC27A004CC59C /* MetaDataMgr.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MetaDataMgr.cpp; sourceTree = "<group>"; };
 		2EE8AF9028ECC27A004CC59C /* MetaDataMgr.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MetaDataMgr.hpp; sourceTree = "<group>"; };
 		2EE8AF9228ECC599004CC59C /* CommonDefs.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CommonDefs.hpp; sourceTree = "<group>"; };
+		2EE8AF9328ECD91E004CC59C /* dbuf.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = dbuf.hpp; sourceTree = "<group>"; };
+		2EE8AF9428ECD91E004CC59C /* dbuf.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = dbuf.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +70,8 @@
 				2EE8AF9228ECC599004CC59C /* CommonDefs.hpp */,
 				2EE8AF9028ECC27A004CC59C /* MetaDataMgr.hpp */,
 				2EE8AF8F28ECC27A004CC59C /* MetaDataMgr.cpp */,
+				2EE8AF9328ECD91E004CC59C /* dbuf.hpp */,
+				2EE8AF9428ECD91E004CC59C /* dbuf.cpp */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -127,6 +132,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2EE8AF9528ECD91E004CC59C /* dbuf.cpp in Sources */,
 				2EE8AF8828ECBD37004CC59C /* main.cpp in Sources */,
 				2EE8AF9128ECC27A004CC59C /* MetaDataMgr.cpp in Sources */,
 			);

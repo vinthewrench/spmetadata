@@ -16,6 +16,7 @@ find_package(Threads)
 set(SOURCES
 	src/main.cpp
 	src/MetaDataMgr.cpp
+	src.dbuf.cpp
 	)
  
 add_executable(spmetadata ${SOURCES})
