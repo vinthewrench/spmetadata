@@ -265,7 +265,19 @@ void MetaDataMgr::MetaDataReader(){
 													  printf("File kind: \"%s\".\n",payload);
 													  break;
 													  
+												  case 'pfls':
+													  printf("-- PAUSE -- \"%s\".\n",payload);
+													  break;
 													  
+												  case 'pend':
+													  printf("-- STOP -- \"%s\".\n",payload);
+													  break;
+													  
+												  case 'pbeg':
+													  printf("-- BEGIN -- \"%s\".\n",payload);
+													  break;
+		
+		
 												  case 'assn':
 													  printf("Sort as: \"%s\".\n",payload);
 													  break;
