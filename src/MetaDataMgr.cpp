@@ -141,8 +141,7 @@ bool MetaDataMgr::openOutput(const char* path, speed_t speed, int &error){
  	struct termios options;
 	
 	int fd ;
-	int result = 0;
-	
+		
 	if((fd = ::open( path, O_RDWR | O_NOCTTY)) <0) {
 		fprintf (stderr, "FAIL open %s %s\n", path, strerror(errno));
 		error = errno;
@@ -202,7 +201,7 @@ bool MetaDataMgr::writePacket(const uint8_t * data, size_t len ){
 	
 	bool success = false;
 
-	printf("write %2zu |%.*s| ",  len, (int)len, data);
+	printf("write %2zu |%.*s|\n",  len, (int)len, data);
 
 #if  defined(__APPLE__)
 	success = true;
@@ -210,11 +209,11 @@ bool MetaDataMgr::writePacket(const uint8_t * data, size_t len ){
 #else
   	success = (::write(_fd, data , len) == len);
 	if(!success)
-		fprintf (stderr, "FAIL write %d  %s\n", len, strerror(errno));
+		fprintf (stderr, "\tFAIL write %d  %s\n", len, strerror(errno));
 
 	success &= (::write(_fd,"\n" , 1) == 1);
 	if(!success)
-		fprintf (stderr, "FAIL write %d  %s\n", 1, strerror(errno));
+		fprintf (stderr, "\tFAIL write %d  %s\n", 1, strerror(errno));
 
 #endif
 	
