@@ -123,12 +123,13 @@ void MetaDataMgr::stop(){
 
  
 
-bool MetaDataMgr::openOutput(const char* portpath, speed_t speed, int &error){
+bool MetaDataMgr::openOutput(const char* path, speed_t speed, int &error){
 
  
 #if defined(__APPLE__)
 	_fd  = 1;
 	return true;
+
 
 #else
  	struct termios options;
@@ -136,7 +137,7 @@ bool MetaDataMgr::openOutput(const char* portpath, speed_t speed, int &error){
 	int fd ;
 	
 	if((fd = ::open( path, O_RDWR | O_NOCTTY)) <0) {
-		ELOG_ERROR(ErrorMgr::FAC_DEVICE, 0, errno, "OPEN %s", path);
+		fprintf (stderr, "FAIL open %s ", path, strerror(errno));
 		error = errno;
 		return false;
 	}
@@ -145,7 +146,7 @@ bool MetaDataMgr::openOutput(const char* portpath, speed_t speed, int &error){
 	
 	// Back up current TTY settings
 	if( tcgetattr(fd, &_tty_opts_backup)<0) {
-		ELOG_ERROR(ErrorMgr::FAC_DEVICE, 0, errno, "tcgetattr %s", path);
+		fprintf (stderr, "FAIL tcgetattr %s ", path, strerror(errno));
 		error = errno;
 		return false;
 	}
@@ -174,7 +175,7 @@ bool MetaDataMgr::openOutput(const char* portpath, speed_t speed, int &error){
 	cfsetispeed (&options, speed);
 	
 	if (tcsetattr(fd, TCSANOW, &options) < 0){
-		ELOG_ERROR(ErrorMgr::FAC_DEVICE, 0, errno, "Unable to tcsetattr %s", path);
+		fprintf (stderr, "FAIL tcsetattr %s ", path, strerror(errno));
 		error = errno;
 		return false;
 	}
