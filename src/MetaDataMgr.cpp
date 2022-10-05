@@ -181,13 +181,13 @@ bool MetaDataMgr::openOutput(const char* path, speed_t speed, int &error){
 	options.c_oflag &= ~ONLCR; // Prevent conversion of newline to carriage return/line feed
 	
   	if (cfsetospeed (&options, speed); < 0){
-		fprintf (stderr, "FAIL cfsetospeed %d  %s\n", spped, strerror(errno));
+		fprintf (stderr, "FAIL cfsetospeed %d  %s\n", speed, strerror(errno));
 		error = errno;
 		return false;
 	}
 	
  	if (cfsetispeed (&options, speed); < 0){
-		fprintf (stderr, "FAIL cfsetispeed %d  %s\n", spped, strerror(errno));
+		fprintf (stderr, "FAIL cfsetispeed %d  %s\n", speed, strerror(errno));
 		error = errno;
 		return false;
 	}
