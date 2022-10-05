@@ -265,18 +265,23 @@ void MetaDataMgr::MetaDataReader(){
 													  printf("File kind: \"%s\".\n",payload);
 													  break;
 													  
+												  case 'astm':
+												  {
+													  uint64_t vl = ntohl(*(uint32_t*)payload);
+													  printf("SongTime:  %llu \n",vl);
+ 												  }
+														  break;
+		 
+													  
 												  case 'pfls':
 													  printf("-- PAUSE -- \"%s\".\n",payload);
 													  break;
-													  
-												  case 'pend':
-													  printf("-- STOP -- \"%s\".\n",payload);
-													  break;
-													  
-												  case 'pbeg':
-													  printf("-- BEGIN -- \"%s\".\n",payload);
-													  break;
 		
+												  case 'prgr':
+													  printf("-- PROGRESS RESUME -- \"%s\".\n",payload);
+													  break;
+
+									 
 		
 												  case 'assn':
 													  printf("Sort as: \"%s\".\n",payload);
