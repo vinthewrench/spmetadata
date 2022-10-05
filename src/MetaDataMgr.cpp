@@ -9,6 +9,12 @@
 #include <iostream>
 #include <filesystem> // C++17
 #include <arpa/inet.h>
+#include <signal.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+#include <errno.h> // Error integer and strerror() function
+
 #include "dbuf.hpp"
 
 typedef void * (*THREADFUNCPTR)(void *);
@@ -137,7 +143,7 @@ bool MetaDataMgr::openOutput(const char* path, speed_t speed, int &error){
 	int fd ;
 	
 	if((fd = ::open( path, O_RDWR | O_NOCTTY)) <0) {
-		fprintf (stderr, "FAIL open %s ", path, strerror(errno));
+		fprintf (stderr, "FAIL open %s %s\n", path, strerror(errno));
 		error = errno;
 		return false;
 	}
@@ -146,7 +152,7 @@ bool MetaDataMgr::openOutput(const char* path, speed_t speed, int &error){
 	
 	// Back up current TTY settings
 	if( tcgetattr(fd, &_tty_opts_backup)<0) {
-		fprintf (stderr, "FAIL tcgetattr %s ", path, strerror(errno));
+		fprintf (stderr, "FAIL tcgetattr %s %s\n", path, strerror(errno));
 		error = errno;
 		return false;
 	}
@@ -175,12 +181,13 @@ bool MetaDataMgr::openOutput(const char* path, speed_t speed, int &error){
 	cfsetispeed (&options, speed);
 	
 	if (tcsetattr(fd, TCSANOW, &options) < 0){
-		fprintf (stderr, "FAIL tcsetattr %s ", path, strerror(errno));
+		fprintf (stderr, "FAIL tcsetattr %s  %s\n", path, strerror(errno));
 		error = errno;
 		return false;
 	}
 	
 	_fd = fd;
+	return true;
 #endif
 	
 }
