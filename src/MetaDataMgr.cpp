@@ -141,6 +141,7 @@ bool MetaDataMgr::openOutput(const char* path, speed_t speed, int &error){
  	struct termios options;
 	
 	int fd ;
+	int result = 0;
 	
 	if((fd = ::open( path, O_RDWR | O_NOCTTY)) <0) {
 		fprintf (stderr, "FAIL open %s %s\n", path, strerror(errno));
@@ -179,15 +180,18 @@ bool MetaDataMgr::openOutput(const char* path, speed_t speed, int &error){
 	options.c_oflag &= ~OPOST; // Prevent special interpretation of output bytes (e.g. newline chars)
 	options.c_oflag &= ~ONLCR; // Prevent conversion of newline to carriage return/line feed
 	
-	cfsetospeed (&options, speed);
-	cfsetispeed (&options, speed);
-	
-	if (tcsetattr(fd, TCSANOW, &options) < 0){
-		fprintf (stderr, "FAIL tcsetattr %s  %s\n", path, strerror(errno));
+  	if (cfsetospeed (&options, speed); < 0){
+		fprintf (stderr, "FAIL cfsetospeed %d  %s\n", spped, strerror(errno));
 		error = errno;
 		return false;
 	}
 	
+ 	if (cfsetispeed (&options, speed); < 0){
+		fprintf (stderr, "FAIL cfsetispeed %d  %s\n", spped, strerror(errno));
+		error = errno;
+		return false;
+	}
+ 
 	_fd = fd;
 	return true;
 #endif
