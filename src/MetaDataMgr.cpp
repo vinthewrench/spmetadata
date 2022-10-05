@@ -195,13 +195,17 @@ bool MetaDataMgr::openOutput(const char* path, speed_t speed, int &error){
 bool MetaDataMgr::writePacket(const uint8_t * data, size_t len ){
 	
 	bool success = false;
-#if defined(__APPLE__)
+
+	printf("write %2zu |%.*s| ",  len, (int)len, data);
+
+#if  defined(__APPLE__)
 	success = true;
+	printf("\n");
 #else
-	int result = ::write(_fd, data , len);
+	ssize_t result = ::write(_fd, data , len);
 	success = (result == len);
-	if(!success)
-		fprintf (stderr, "FAIL write %d\n", result);
+	printf ( "%4s %zd  %s\n", success?"OK":"FAIL", result, strerror(errno));
+	
 	
 ////	success = (::write(_fd, data , len) == len);
 //	if(!success)
@@ -209,12 +213,11 @@ bool MetaDataMgr::writePacket(const uint8_t * data, size_t len ){
 
 	success &= (::write(_fd,"\n" , 1) == 1);
 	if(!success)
-		fprintf (stderr, "FAIL write %d  %s\n", len, strerror(errno));
+		fprintf (stderr, "FAIL write %d  %s\n", 1, strerror(errno));
 
 #endif
 	
-	printf("%-4s %2zu |%.*s|\n",(success?"OK":"FAIL"),  len, (int)len, data);
-
+ 
 	return success;
 }
 
