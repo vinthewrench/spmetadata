@@ -17,16 +17,19 @@
 
 #if defined(__APPLE__)
 const char* path_metadata  = "shairport-sync-metadata";
+const char* path_port  = "stdout";
 
 #else
 const char* path_metadata  = "/tmp/shairport-sync-metadata";
+const char* path_port  = "/dev/ttyAMA0";
 #endif
 
 
 int main(int argc, const char * argv[]) {
  
-	MetaDataMgr _mgr;
-	
+	MetaDataMgr* mgr 	= MetaDataMgr::shared();
+
+	 
 	printf("Start MetaData reader\n");
 	
 	
@@ -34,15 +37,14 @@ int main(int argc, const char * argv[]) {
 		int error = 0;
 
 		
-		if(!_mgr.begin(path_metadata, error))
+		if(!mgr->begin(path_metadata, path_port, B115200, error))
 			throw Exception("failed to setup MetaData Mgr.  error: %d", error);
-
-		
-		while(true){
+ 
+		while(mgr->isSetup()){
 
 			sleep(100);
 		}
-		_mgr.stop();
+		mgr->stop();
 
 	}
 	catch ( const Exception& e)  {

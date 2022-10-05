@@ -9,7 +9,8 @@
 #include <iostream>
 #include <filesystem> // C++17
 #include <arpa/inet.h>
- 
+#include "dbuf.hpp"
+
 typedef void * (*THREADFUNCPTR)(void *);
 
 typedef struct {
@@ -34,13 +35,40 @@ static bool sInFilterTable(uint32_t type, uint32_t code){
 	return false;
 }
 
+MetaDataMgr *MetaDataMgr::sharedInstance = NULL;
+
+
+MetaDataMgr * MetaDataMgr::shared() {
+	if(!sharedInstance){
+		sharedInstance = new MetaDataMgr;
+	}
+	return sharedInstance;
+}
  
+
+static void sigHandler (int signum) {
+	
+ 	// ignore hangup
+	if(signum == SIGHUP)
+		return;
+	
+	auto mgr = MetaDataMgr::shared();
+	mgr->stop();
+	exit(0);
+}
 
 
 MetaDataMgr::MetaDataMgr() {
+	
+	signal(SIGKILL, sigHandler);
+	signal(SIGHUP, sigHandler);
+	signal(SIGQUIT, sigHandler);
+	
+	signal(SIGTERM, sigHandler);
+	signal(SIGINT, sigHandler);
+
 	_isSetup = false;
  	_isRunning = true;
-
  
 	pthread_create(&_TID, NULL,
 										  (THREADFUNCPTR) &MetaDataMgr::MetaDataReaderThread, (void*)this);
@@ -56,33 +84,122 @@ MetaDataMgr::~MetaDataMgr(){
 }
 
 
-bool MetaDataMgr::begin(const char* path){
+bool MetaDataMgr::begin(const char* metapath, const char* portpath, speed_t speed){
 	int error = 0;
 	
-	return begin(path, error);
+	return begin(metapath,portpath, speed, error);
 }
 
 
 
-bool MetaDataMgr::begin(const char* path,  int &error){
-
+bool MetaDataMgr::begin(const char* metapath, const char* portpath, speed_t speed,  int &error){
+ 
 	if(isConnected())
 		return true;
 	 
-	_metaDataFilePath = string(path);
-	_isSetup = true;
-
-	return true;
+	_metaDataFilePath = string(metapath);
+	
+	_isSetup  = openOutput(portpath, speed, error);
+ 
+	return _isSetup;
   }
 
 void MetaDataMgr::stop(){
 	
-	if(_isSetup) {
- 		_isSetup = false;
-		}
+	if(_isSetup && _fd > -1){
+	
+#if defined(__APPLE__)
+#else
+		// Restore previous TTY settings
+		tcsetattr(_fd, TCSANOW, &_tty_opts_backup);
+		close(_fd);
+		_fd = -1;
+#endif
+	}
+	
+	_isSetup = false;
+ 
 }
 
  
+
+bool MetaDataMgr::openOutput(const char* portpath, speed_t speed, int &error){
+
+ 
+#if defined(__APPLE__)
+	_fd  = 1;
+	return true;
+
+#else
+ 	struct termios options;
+	
+	int fd ;
+	
+	if((fd = ::open( path, O_RDWR | O_NOCTTY)) <0) {
+		ELOG_ERROR(ErrorMgr::FAC_DEVICE, 0, errno, "OPEN %s", path);
+		error = errno;
+		return false;
+	}
+	
+	fcntl(fd, F_SETFL, 0);      // Clear the file status flags
+	
+	// Back up current TTY settings
+	if( tcgetattr(fd, &_tty_opts_backup)<0) {
+		ELOG_ERROR(ErrorMgr::FAC_DEVICE, 0, errno, "tcgetattr %s", path);
+		error = errno;
+		return false;
+	}
+	
+	cfmakeraw(&options);
+	options.c_cflag &= ~PARENB; // Clear parity bit, disabling parity (most common)
+	options.c_cflag &= ~CSTOPB; // Clear stop field, only one stop bit used in communication (most common)
+	options.c_cflag &= ~CSIZE; // Clear all bits that set the data size
+	options.c_cflag |= CS8; // 8 bits per byte (most common)
+	// options.c_cflag &= ~CRTSCTS; // Disable RTS/CTS hardware flow control 	options.c_cflag |=  CRTSCTS; // Disable RTS/CTS hardware flow control (most common)
+	options.c_cflag |=  CRTSCTS; // DCTS flow control of output
+	options.c_cflag |= CREAD | CLOCAL; // Turn on READ & ignore ctrl lines (CLOCAL = 1)
+	
+	options.c_lflag &= ~ICANON;
+	options.c_lflag &= ~ECHO; // Disable echo
+	options.c_lflag &= ~ECHOE; // Disable erasure
+	options.c_lflag &= ~ECHONL; // Disable new-line echo
+	options.c_lflag &= ~ISIG; // Disable interpretation of INTR, QUIT and SUSP
+	options.c_iflag &= ~(IXON | IXOFF | IXANY); // Turn off s/w flow ctrl
+	options.c_iflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL); // Disable any special handling of received bytes
+	
+	options.c_oflag &= ~OPOST; // Prevent special interpretation of output bytes (e.g. newline chars)
+	options.c_oflag &= ~ONLCR; // Prevent conversion of newline to carriage return/line feed
+	
+	cfsetospeed (&options, speed);
+	cfsetispeed (&options, speed);
+	
+	if (tcsetattr(fd, TCSANOW, &options) < 0){
+		ELOG_ERROR(ErrorMgr::FAC_DEVICE, 0, errno, "Unable to tcsetattr %s", path);
+		error = errno;
+		return false;
+	}
+	
+	_fd = fd;
+#endif
+	
+}
+
+bool MetaDataMgr::writePacket(const uint8_t * data, size_t len ){
+	
+	bool success = false;
+#if defined(__APPLE__)
+	success = true;
+#else
+	success = (::write(_fd,data , len) == len);
+	success &= (::write(_fd,"\n" , 1) == 1);
+#endif
+	
+	printf("%-4s %2zu |%.*s|\n",(success?"OK":"FAIL"),  len, (int)len, data);
+
+	return success;
+}
+
+
 bool  MetaDataMgr::isConnected() {
  
 	return _ifs.is_open();
@@ -93,7 +210,8 @@ bool  MetaDataMgr::isConnected() {
 
 void MetaDataMgr::MetaDataReader(){
 
-	 
+	dbuf outBuffer;
+	
 	  while(_isRunning){
 		   
 		  // if not setup // check back later
@@ -143,8 +261,12 @@ void MetaDataMgr::MetaDataReader(){
 											  *(uint32_t*)codestring = htonl(code);
 											  codestring[4]=0;
 
-											  printf("%s,%s,%zu,%s\n",typestring,codestring, input_length, payload.c_str());
-											  
+											  outBuffer.reset();
+											  char header[16];
+		 									  sprintf( header, "%s,%s,%zu,",typestring,codestring, input_length);
+											  outBuffer.append_data(header, strlen(header));
+											  outBuffer.append_data( (void*) payload.c_str(), input_length);
+ 											  writePacket(outBuffer.data(), outBuffer.size());
 										  }
 										  
 									  }

@@ -23,7 +23,7 @@
 typedef unsigned short uint16_t;
 #endif /* _UINT16_T */
 
-
+ 
 class Exception: virtual public std::runtime_error {
 	
 protected:

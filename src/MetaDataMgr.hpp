@@ -21,6 +21,7 @@
 #include <pthread.h>
 #include <utility>      // std::pair, std::make_pair
 #include <fstream>
+#include <termios.h>
 
 
 using namespace std;
@@ -28,21 +29,32 @@ using namespace std;
 class MetaDataMgr {
 	
 public:
+ 
+	static MetaDataMgr *shared();
 
 	MetaDataMgr();
 	~MetaDataMgr();
 	
-	bool begin(const char* path = "/tmp/shairport-sync-metadata");
-	bool begin(const char* path, int &error);
+	bool begin(const char* metapath = "/tmp/shairport-sync-metadata",
+				const char* portpath = "/dev/ttyAMA0",
+				  speed_t speed =  B115200);
+	
+	bool begin(const char* metapath, const char* portpath, speed_t speed, int &error);
 
 	void stop();
 	bool isConnected() ;
+	bool isSetup() {return _isSetup;};
 
 private:
 	
+	
+	static MetaDataMgr *sharedInstance;
+
 	bool 				_isSetup = false;
 
-	
+	bool openOutput(const char* portpath, speed_t speed, int &error);
+	bool writePacket(const uint8_t * data, size_t len );
+ 
 	void MetaDataReader();		// C++ version of thread
 	// C wrappers for MetaDataReader;
 	static void* MetaDataReaderThread(void *context);
@@ -54,4 +66,7 @@ private:
 	string 					_metaDataFilePath;
 	std::ifstream			_ifs;
 
+	
+	int	 	_fd;
+ 	struct termios _tty_opts_backup;
 };
