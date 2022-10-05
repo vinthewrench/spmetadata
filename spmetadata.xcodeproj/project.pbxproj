@@ -10,17 +10,19 @@
 		2EE8AF8828ECBD37004CC59C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EE8AF8728ECBD37004CC59C /* main.cpp */; };
 		2EE8AF9128ECC27A004CC59C /* MetaDataMgr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EE8AF8F28ECC27A004CC59C /* MetaDataMgr.cpp */; };
 		2EE8AF9528ECD91E004CC59C /* dbuf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EE8AF9428ECD91E004CC59C /* dbuf.cpp */; };
+		2EE8AF9728ED1098004CC59C /* shairport-sync-metadata in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2EE8AF9628ED108D004CC59C /* shairport-sync-metadata */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		2EE8AF8228ECBD37004CC59C /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
+			buildActionMask = 12;
+			dstPath = "";
+			dstSubfolderSpec = 16;
 			files = (
+				2EE8AF9728ED1098004CC59C /* shairport-sync-metadata in CopyFiles */,
 			);
-			runOnlyForDeploymentPostprocessing = 1;
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
@@ -33,6 +35,7 @@
 		2EE8AF9228ECC599004CC59C /* CommonDefs.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CommonDefs.hpp; sourceTree = "<group>"; };
 		2EE8AF9328ECD91E004CC59C /* dbuf.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = dbuf.hpp; sourceTree = "<group>"; };
 		2EE8AF9428ECD91E004CC59C /* dbuf.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = dbuf.cpp; sourceTree = "<group>"; };
+		2EE8AF9628ED108D004CC59C /* shairport-sync-metadata */ = {isa = PBXFileReference; lastKnownFileType = text; path = "shairport-sync-metadata"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,6 +53,7 @@
 			isa = PBXGroup;
 			children = (
 				2EE8AF8E28ECBDA2004CC59C /* CMakeLists.txt */,
+				2EE8AF9628ED108D004CC59C /* shairport-sync-metadata */,
 				2EE8AF8628ECBD37004CC59C /* src */,
 				2EE8AF8528ECBD37004CC59C /* Products */,
 			);

@@ -14,7 +14,14 @@
 #include "CommonDefs.hpp"
 #include "MetaDataMgr.hpp"
 
- 
+
+#if defined(__APPLE__)
+const char* path_metadata  = "shairport-sync-metadata";
+
+#else
+const char* path_metadata  = "/tmp/shairport-sync-metadata";
+#endif
+
 
 int main(int argc, const char * argv[]) {
  
@@ -27,7 +34,7 @@ int main(int argc, const char * argv[]) {
 		int error = 0;
 
 		
-		if(!_mgr.begin("/tmp/shairport-sync-metadata", error))
+		if(!_mgr.begin(path_metadata, error))
 			throw Exception("failed to setup MetaData Mgr.  error: %d", error);
 
 		

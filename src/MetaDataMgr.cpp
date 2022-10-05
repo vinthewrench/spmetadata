@@ -165,7 +165,7 @@ void MetaDataMgr::MetaDataReader(){
 				  u32_bytes_t type, code;
 				  uint32_t length;
 				  
-				  printf("%4lu:|%s|\n",line.size(), line.c_str());
+//				  printf("%4lu:|%s|\n",line.size(), line.c_str());
 				  int ret = sscanf(line.c_str(),"<item><type>%8x</type><code>%8x</code><length>%u</length>",&type.u32,&code.u32,&length);
 				  if (ret==3) {
 					  if (length>0) {
@@ -176,19 +176,106 @@ void MetaDataMgr::MetaDataReader(){
 								  if(std::getline(_ifs, line) ){
 									  size_t outputlength=0;
 									  
-									  auto b64Len = line.find("</data>");
-									  if(b64Len != std::string::npos){
-										  
+									  auto input_length = line.find("</data>");
+									  if(input_length != std::string::npos){
+										 
+ 
+										  size_t calculated_output_length = (input_length / 4 * 3) + 2 ;
+
 										  buff.reset();
-										  buff.reserve(length);
-				
-										  if (base64_decode(line.c_str(), b64Len, buff.data(),&outputlength)!=0) {
+										  buff.reserve(calculated_output_length);
+										  outputlength = calculated_output_length;
+		  
+		//								  printf("%4s %4s  in: %zu,  out:%zu\n " , type.bytes, code.bytes, input_length,  outputlength );
+										  if (code.u32 !='PICT') {
+										  if (base64_decode(line.c_str(), input_length, buff.data(),&outputlength)!=0) {
 											  printf("Failed to decode it.\n");
 											  continue;
 										  }
 										  // process actual data  (length bytes of base64)			  }
 				
-										  printf("%4s %4s %zu\n " , type.bytes, code.bytes, outputlength );
+											  buff.data()[outputlength] = 0;
+											  char* payload =  (char*) buff.data();
+											  
+											  switch (code.u32) {
+												  case 'mper':
+												  {
+													  
+													  // the following is just diagnostic
+													  // {
+													  // printf("'mper' payload is %d bytes long: ", length);
+													  // char* p = payload;
+													  // int c;
+													  // for (c=0; c < length; c++) {
+													  //   printf("%02x", *p);
+													  //   p++;
+													  // }
+													  // printf("\n");
+													  // }
+													  
+													  // get the 64-bit number as a uint64_t by reading two uint32_t s and combining them
+													  uint64_t vl = ntohl(*(uint32_t*)payload); // get the high order 32 bits
+													  vl = vl << 32; // shift them into the correct location
+													  uint64_t ul = ntohl(*(uint32_t*)(payload+sizeof(uint32_t))); // and the low order 32 bits
+													  vl = vl + ul;
+													  printf("Persistent ID:  %08llx\n",vl);
+ 												  }
+													  break;
+												  case 'asul':
+													  printf("URL: \"%s\".\n",payload);
+													  break;
+												  case 'asal':
+													  printf("Album Name: \"%s\".\n",payload);
+													  break;
+												  case 'asar':
+													  printf("Artist: \"%s\".\n",payload);
+													  break;
+												  case 'ascm':
+													  printf("Comment: \"%s\".\n",payload);
+													  break;
+												  case 'asgn':
+													  printf("Genre: \"%s\".\n",payload);
+													  break;
+												  case 'minm':
+													  printf("Title: \"%s\".\n",payload);
+													  break;
+												  case 'ascp':
+													  printf("Composer: \"%s\".\n",payload);
+													  break;
+												  case 'asdt':
+													  printf("File kind: \"%s\".\n",payload);
+													  break;
+												  case 'assn':
+													  printf("Sort as: \"%s\".\n",payload);
+													  break;
+												  case 'PICT':
+													  printf("Picture received, length %u bytes.\n",length);
+													  break;
+												  case 'clip':
+													  printf("The AirPlay 2 client at \"%s\" has started a play session.\n",payload);
+													  break;
+												  case 'svip':
+													  printf("The address used by Shairport Sync for this play session is: \"%s\".\n",payload);
+													  break;
+												  case 'conn':
+													  printf("The AirPlay 2 client at \"%s\" is about to select this player. (AirPlay 2 only.)\n",payload);
+													  break;
+												  case 'disc':
+													  printf("The AirPlay 2 client at \"%s\" has released this player. (AirPlay 2 only.)\n",payload);
+													  break;
+												  default: if (type.u32=='ssnc') {
+													  char typestring[5];
+													  *(uint32_t*)typestring = htonl(type.u32);
+													  typestring[4]=0;
+													  char codestring[5];
+													  *(uint32_t*)codestring = htonl(code.u32);
+													  codestring[4]=0;
+													  printf("\"%s\" \"%s\": \"%s\".\n",typestring,codestring,payload);
+												  }
+												
+											  }
+								 
+										  }
 									  }
 								  }
 								  
