@@ -21,7 +21,7 @@ const char* path_port  = "stdout";
 
 #else
 const char* path_metadata  = "/tmp/shairport-sync-metadata";
-const char* path_port  = "/dev/ttyAMA0";
+const char* path_port  = "/dev/ttyS0";
 #endif
 
 

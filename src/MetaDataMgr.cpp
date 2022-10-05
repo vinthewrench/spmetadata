@@ -148,6 +148,8 @@ bool MetaDataMgr::openOutput(const char* path, speed_t speed, int &error){
 		return false;
 	}
 	
+	printf("open %s\n", path);
+	
 	fcntl(fd, F_SETFL, 0);      // Clear the file status flags
 	
 	// Back up current TTY settings
