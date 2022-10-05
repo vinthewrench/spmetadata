@@ -8,6 +8,8 @@
 #include "MetaDataMgr.hpp"
 #include <iostream>
 #include <filesystem> // C++17
+#include <arpa/inet.h>
+
 #include "dbuf.hpp"
 
 typedef void * (*THREADFUNCPTR)(void *);
