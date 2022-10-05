@@ -198,6 +198,14 @@ void MetaDataMgr::MetaDataReader(){
 				
 											  buff.data()[outputlength] = 0;
 											  char* payload =  (char*) buff.data();
+											  char typestring[5];
+											  *(uint32_t*)typestring = htonl(type.u32);
+											  typestring[4]=0;
+											  char codestring[5];
+											  *(uint32_t*)codestring = htonl(code.u32);
+											  codestring[4]=0;
+
+											  printf("\"%s\" \"%s\" %2zu ",typestring,codestring, outputlength);
 											  
 											  switch (code.u32) {
 												  case 'mper':
@@ -223,6 +231,15 @@ void MetaDataMgr::MetaDataReader(){
 													  printf("Persistent ID:  %08llx\n",vl);
  												  }
 													  break;
+													  
+													  
+												  case 'mdst':
+													  printf("-- Start session -- : \"%s\".\n",payload);
+													  break;
+												  case 'mden':
+													  printf("-- End session -- : \"%s\".\n\n",payload);
+													  break;
+			
 												  case 'asul':
 													  printf("URL: \"%s\".\n",payload);
 													  break;
@@ -247,6 +264,8 @@ void MetaDataMgr::MetaDataReader(){
 												  case 'asdt':
 													  printf("File kind: \"%s\".\n",payload);
 													  break;
+													  
+													  
 												  case 'assn':
 													  printf("Sort as: \"%s\".\n",payload);
 													  break;
@@ -265,17 +284,11 @@ void MetaDataMgr::MetaDataReader(){
 												  case 'disc':
 													  printf("The AirPlay 2 client at \"%s\" has released this player. (AirPlay 2 only.)\n",payload);
 													  break;
-												  default: if (type.u32=='ssnc') {
-													  char typestring[5];
-													  *(uint32_t*)typestring = htonl(type.u32);
-													  typestring[4]=0;
-													  char codestring[5];
-													  *(uint32_t*)codestring = htonl(code.u32);
-													  codestring[4]=0;
-													  printf("\"%s\" \"%s\": \"%s\".\n",typestring,codestring,payload);
-												  }
-												
-											  }
+												  default: if (type.u32=='ssnc')
+ 													  printf("\"%s\".\n", payload);
+ 													  else
+														  printf("\n");
+	 										  }
 								 
 										  }
 									  }
