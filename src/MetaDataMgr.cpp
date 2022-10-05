@@ -204,7 +204,7 @@ bool MetaDataMgr::writePacket(const uint8_t * data, size_t len ){
 #else
 	ssize_t result = ::write(_fd, data , len);
 	success = (result == len);
-	printf ( "%4s %zd  %s\n", success?"OK":"FAIL", result, strerror(errno));
+	printf ( "%4s %zd %d %s\n", success?"OK":"FAIL", result,errno,  strerror(errno));
 	
 	
 ////	success = (::write(_fd, data , len) == len);
