@@ -240,20 +240,20 @@ bool MetaDataMgr::openOutput(const char* path, speed_t speed, int &error){
 	options.c_oflag &= ~OPOST; // Prevent special interpretation of output bytes (e.g. newline chars)
 	options.c_oflag &= ~ONLCR; // Prevent conversion of newline to carriage return/line feed
 	
-	options.c_ispeed=speed;
-	options.c_ospeed=speed;
-
-  	if (cfsetospeed (&options, speed) < 0){
+//	options.c_ispeed=speed;
+//	options.c_ospeed=speed;
+ 
+  	if (cfsetspeed (&options, speed) < 0){
 		fprintf (stderr, "FAIL cfsetospeed %d  %s\n", speed, strerror(errno));
 		error = errno;
 		return false;
 	}
-	
- 	if (cfsetispeed (&options, speed) < 0){
-		fprintf (stderr, "FAIL cfsetispeed %d  %s\n", speed, strerror(errno));
-		error = errno;
-		return false;
-	}
+//	
+// 	if (cfsetispeed (&options, speed) < 0){
+//		fprintf (stderr, "FAIL cfsetispeed %d  %s\n", speed, strerror(errno));
+//		error = errno;
+//		return false;
+//	}
  
  
 	printf("openOutput %s at speed %u \n", path, speed);
