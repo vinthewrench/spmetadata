@@ -131,6 +131,8 @@ void MetaDataMgr::stop(){
 
 bool MetaDataMgr::openOutput(const char* path, speed_t speed, int &error){
 
+	printf("openOutput %s at speed %lu \n", path, speed);
+
  
 #if defined(__APPLE__)
 	_fd  = 1;
@@ -190,8 +192,8 @@ bool MetaDataMgr::openOutput(const char* path, speed_t speed, int &error){
 		return false;
 	}
  
-	printf("open %s at speed %d \n", path, speed);
-	
+	printf("openOutput1 %s at speed %lu \n", path, speed);
+
 	_fd = fd;
 	return true;
 #endif
