@@ -37,7 +37,7 @@ int main(int argc, const char * argv[]) {
 		int error = 0;
 
 		
-		if(!mgr->begin(path_metadata, path_port, B115200, error))
+		if(!mgr->begin(path_metadata, path_port, B38400, error))
 			throw Exception("failed to setup MetaData Mgr\n", error);
  
 		while(mgr->isSetup()){

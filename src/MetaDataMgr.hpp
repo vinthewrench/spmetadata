@@ -37,7 +37,7 @@ public:
 	
 	bool begin(const char* metapath = "/tmp/shairport-sync-metadata",
 				const char* portpath = "/dev/ttyAMA0",
-				  speed_t speed =  B115200);
+				  speed_t speed =  B38400);
 	
 	bool begin(const char* metapath, const char* portpath, speed_t speed, int &error);
 
