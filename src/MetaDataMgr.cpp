@@ -236,6 +236,13 @@ bool  MetaDataMgr::isConnected() {
 // MARK: -  MetaDataReader thread
 
 
+inline  std::string trimCNTRL(std::string source) {
+	  source.erase(std::find_if(source.rbegin(), source.rend(), [](char c) {
+			return !std::iscntrl(static_cast<unsigned char>(c));
+	  }).base(), source.end());
+	  return source;
+ }
+
 void MetaDataMgr::MetaDataReader(){
 
 	dbuf outBuffer;
@@ -281,6 +288,7 @@ void MetaDataMgr::MetaDataReader(){
 										  if(input_length != std::string::npos){
 											  
 											  string payload = line.substr(0,input_length);
+											  payload = trimCNTRL(payload);
 											 
 											  char typestring[5];
 											  *(uint32_t*)typestring = htonl(type);
@@ -293,7 +301,7 @@ void MetaDataMgr::MetaDataReader(){
 											  char header[16];
 		 									  sprintf( header, "$%s,%s,",typestring,codestring);
 											  outBuffer.append_data(header, strlen(header));
-											  outBuffer.append_data( (void*) payload.c_str(), input_length);
+											  outBuffer.append_data( (void*) payload.c_str(), payload.size());
 											  outBuffer.append_char('\n');
  											  writePacket(outBuffer.data(), outBuffer.size());
 										  }
