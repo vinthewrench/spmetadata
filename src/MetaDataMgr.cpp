@@ -13,6 +13,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
+#include <algorithm>
 
 #include <errno.h> // Error integer and strerror() function
 
@@ -199,7 +200,7 @@ bool MetaDataMgr::openOutput(const char* path, speed_t speed, int &error){
 	}
  
  
-	printf("openOutput %s at speed %lu \n", path, speed);
+	printf("openOutput %s at speed %u \n", path, speed);
 
 	_fd = fd;
 	return true;
