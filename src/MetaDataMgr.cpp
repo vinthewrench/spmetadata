@@ -83,7 +83,10 @@ static filter_table_t filter_table[] = {
 	{'core', 'asal'}, // daap.songalbum
 	{'core', 'asar'},	// daap.songartist
 	{'core', 'minm'}, // dmap.itemname
-	{'core', 'caps'} // play status  ( 01/ 02 )
+	{'core', 'asgn'}, //  daap.songgenre
+	{'core', 'ascp'}, //  daap.daap.songcomposer
+	{'core', 'asdk'}, //  daap.daap.songdatakind
+ 	{'core', 'caps'} // play status  ( 01/ 02 )
 };
 
 static bool sInFilterTable(uint32_t type, uint32_t code){
@@ -335,6 +338,15 @@ void MetaDataMgr::MetaDataReader(){
 								  
 								  if(std::getline(_ifs, line) ){
 									  
+									  char typestring[5];
+									  *(uint32_t*)typestring = htonl(type);
+									  typestring[4]=0;
+									  char codestring[5];
+									  *(uint32_t*)codestring = htonl(code);
+									  codestring[4]=0;
+
+//									  printf("%s %s \n",typestring, codestring);
+									  
 									  // filter out for only the packets I want..
 									  if(sInFilterTable( type, code)){
 	 
@@ -344,13 +356,7 @@ void MetaDataMgr::MetaDataReader(){
 											  string payload = line.substr(0,input_length);
 											  payload = trimCNTRL(payload);
 											 
-											  char typestring[5];
-											  *(uint32_t*)typestring = htonl(type);
-											  typestring[4]=0;
-											  char codestring[5];
-											  *(uint32_t*)codestring = htonl(code);
-											  codestring[4]=0;
-
+			
 											  outBuffer.reset();
 											  char header[16];
 		 									  sprintf( header, "$%s,%s,",typestring,codestring);
