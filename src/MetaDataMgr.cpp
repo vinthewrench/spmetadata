@@ -19,7 +19,7 @@
 
 #include "dbuf.hpp"
 
-#define DEBUG_HEX 1
+#define DEBUG_HEX 0
 
 #if DEBUG_HEX
 
@@ -265,7 +265,7 @@ bool MetaDataMgr::writePacket(const uint8_t * data, size_t len ){
 	
 	bool success = false;
 
-	printf("write %2zu |%.*s|\n",  len, (int)len, data);
+	printf("send %2zu %.*s",  len, (int)len, data);
 
 #if  defined(__APPLE__)
 	success = true;
