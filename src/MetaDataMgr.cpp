@@ -291,7 +291,7 @@ void MetaDataMgr::MetaDataReader(){
 
 											  outBuffer.reset();
 											  char header[16];
-		 									  sprintf( header, "$%s,%s,%zu,",typestring,codestring, input_length);
+		 									  sprintf( header, "$%s,%s,",typestring,codestring);
 											  outBuffer.append_data(header, strlen(header));
 											  outBuffer.append_data( (void*) payload.c_str(), input_length);
 											  outBuffer.append_char('\n');
