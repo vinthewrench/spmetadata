@@ -235,7 +235,8 @@ bool MetaDataMgr::openOutput(const char* path, speed_t speed, int &error){
 	options.c_iflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL); // Disable any special handling of received bytes
 	
 	options.c_oflag &= ~OPOST; // Prevent special interpretation of output bytes (e.g. newline chars)
-	options.c_oflag &= ~ONLCR; // Prevent conversion of newline to carriage return/line feed
+ 	options.c_oflag &= ~(ONLCR | OCRNL); // Prevent conversion of newline to carriage return/line feed
+ 
 	
 	options.c_ispeed=speed;
 	options.c_ospeed=speed;
