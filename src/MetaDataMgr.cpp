@@ -12,6 +12,7 @@
 #include <signal.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/ioctl.h>
 
 #include <errno.h> // Error integer and strerror() function
 
@@ -118,6 +119,9 @@ void MetaDataMgr::stop(){
 #else
 		// Restore previous TTY settings
 		tcsetattr(_fd, TCSANOW, &_tty_opts_backup);
+		
+		ioctl(_fd, TIOCNXCL);
+ 
 		close(_fd);
 		_fd = -1;
 #endif
@@ -130,15 +134,12 @@ void MetaDataMgr::stop(){
  
 
 bool MetaDataMgr::openOutput(const char* path, speed_t speed, int &error){
-
-	printf("openOutput %s at speed %lu \n", path, speed);
-
  
 #if defined(__APPLE__)
 	_fd  = 1;
 	return true;
 
-
+ 
 #else
  	struct termios options;
 	
@@ -150,9 +151,11 @@ bool MetaDataMgr::openOutput(const char* path, speed_t speed, int &error){
 		return false;
 	}
 	
-	
+	// Block non-root users from using this port
+	ioctl(_fd, TIOCEXCL);
+
 	fcntl(fd, F_SETFL, 0);      // Clear the file status flags
-	
+ 
 	// Back up current TTY settings
 	if( tcgetattr(fd, &_tty_opts_backup)<0) {
 		fprintf (stderr, "FAIL tcgetattr %s %s\n", path, strerror(errno));
@@ -192,7 +195,8 @@ bool MetaDataMgr::openOutput(const char* path, speed_t speed, int &error){
 		return false;
 	}
  
-	printf("openOutput1 %s at speed %lu \n", path, speed);
+ 
+	printf("openOutput %s at speed %lu \n", path, speed);
 
 	_fd = fd;
 	return true;
