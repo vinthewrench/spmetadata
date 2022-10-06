@@ -211,10 +211,6 @@ bool MetaDataMgr::writePacket(const uint8_t * data, size_t len ){
 	if(!success)
 		fprintf (stderr, "\tFAIL write %d  %s\n", len, strerror(errno));
 
-	success &= (::write(_fd,"\n" , 1) == 1);
-	if(!success)
-		fprintf (stderr, "\tFAIL write %d  %s\n", 1, strerror(errno));
-
 #endif
 	
  
@@ -285,9 +281,10 @@ void MetaDataMgr::MetaDataReader(){
 
 											  outBuffer.reset();
 											  char header[16];
-		 									  sprintf( header, "%s,%s,%zu,",typestring,codestring, input_length);
+		 									  sprintf( header, "$%s,%s,%zu,",typestring,codestring, input_length);
 											  outBuffer.append_data(header, strlen(header));
 											  outBuffer.append_data( (void*) payload.c_str(), input_length);
+											  outBuffer.append_char('\n');
  											  writePacket(outBuffer.data(), outBuffer.size());
 										  }
 										  
