@@ -148,7 +148,6 @@ bool MetaDataMgr::openOutput(const char* path, speed_t speed, int &error){
 		return false;
 	}
 	
-	printf("open %s\n", path);
 	
 	fcntl(fd, F_SETFL, 0);      // Clear the file status flags
 	
@@ -191,6 +190,8 @@ bool MetaDataMgr::openOutput(const char* path, speed_t speed, int &error){
 		return false;
 	}
  
+	printf("open %s at speed %d \n", path, speed);
+	
 	_fd = fd;
 	return true;
 #endif
