@@ -86,7 +86,11 @@ static filter_table_t filter_table[] = {
 //	{'core', 'asgn'}, //  daap.songgenre
 //	{'core', 'ascp'}, //  daap.daap.songcomposer
 //	{'core', 'asdk'}, //  daap.daap.songdatakind
- 	{'core', 'caps'} // play status  ( 01/ 02 )
+ 	{'core', 'caps'}, // play status  ( 01/ 02 )
+	
+	{'ssnc', 'mden'}, //  Metadata stream processing end
+	{'ssnc', 'mdst'}, //  Metadata stream processing start
+
 };
 
 static bool sInFilterTable(uint32_t type, uint32_t code){
@@ -346,7 +350,7 @@ void MetaDataMgr::MetaDataReader(){
 									  *(uint32_t*)codestring = htonl(code);
 									  codestring[4]=0;
 
-//									  printf("%s %s \n",typestring, codestring);
+ 									  printf("%s %s \n",typestring, codestring);
 									  
 									  // filter out for only the packets I want..
 									  if(sInFilterTable( type, code)){
