@@ -83,8 +83,8 @@ static filter_table_t filter_table[] = {
 	{'core', 'asal'}, // daap.songalbum
 	{'core', 'asar'},	// daap.songartist
 	{'core', 'minm'}, // dmap.itemname
-	{'core', 'asgn'}, //  daap.songgenre
-	{'core', 'ascp'}, //  daap.daap.songcomposer
+//	{'core', 'asgn'}, //  daap.songgenre
+//	{'core', 'ascp'}, //  daap.daap.songcomposer
 //	{'core', 'asdk'}, //  daap.daap.songdatakind
  	{'core', 'caps'} // play status  ( 01/ 02 )
 };
@@ -248,7 +248,7 @@ bool MetaDataMgr::openOutput(const char* path, speed_t speed, int &error){
 		error = errno;
 		return false;
 	}
-//	
+//
 // 	if (cfsetispeed (&options, speed) < 0){
 //		fprintf (stderr, "FAIL cfsetispeed %d  %s\n", speed, strerror(errno));
 //		error = errno;
@@ -318,6 +318,7 @@ void MetaDataMgr::MetaDataReader(){
 				  _ifs.open(_metaDataFilePath, ios::in);
 				  
 				  if(!_ifs.is_open()) {
+					  sleep(1);
 					  continue;
 				  }
 			  }
