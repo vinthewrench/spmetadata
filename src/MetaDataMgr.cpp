@@ -360,7 +360,6 @@ void MetaDataMgr::MetaDataReader(){
 											  string payload = line.substr(0,input_length);
 											  payload = trimCNTRL(payload);
 											 
-			
 											  outBuffer.reset();
 											  char header[16];
 		 									  sprintf( header, "$%s,%s,",typestring,codestring);
@@ -374,7 +373,7 @@ void MetaDataMgr::MetaDataReader(){
 										  
 									  }
 									  else {
-										  printf("%s %s \n",typestring, codestring);
+	//									  printf("%s %s \n",typestring, codestring);
  									  }
 								  }
 							  }
