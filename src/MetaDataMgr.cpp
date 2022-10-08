@@ -247,20 +247,23 @@ bool MetaDataMgr::openOutput(const char* path, speed_t speed, int &error){
 //	options.c_ispeed=speed;
 //	options.c_ospeed=speed;
  
-  	if (cfsetospeed (&options, speed) < 0){
+  	if (cfsetspeed (&options, speed) < 0){
 		fprintf (stderr, "FAIL cfsetospeed %d  %s\n", speed, strerror(errno));
 		error = errno;
 		return false;
 	}
-
- 	if (cfsetispeed (&options, speed) < 0){
-		fprintf (stderr, "FAIL cfsetispeed %d  %s\n", speed, strerror(errno));
-		error = errno;
-		return false;
-	}
- 	
+////
+//// 	if (cfsetispeed (&options, speed) < 0){
+////		fprintf (stderr, "FAIL cfsetispeed %d  %s\n", speed, strerror(errno));
+////		error = errno;
+////		return false;
+////	}
+//
+//	cfsetospeed (&options, speed);
+//	cfsetispeed (&options, speed);
+	
 	if (tcsetattr(fd, TCSANOW, &options) < 0){
-		fprintf (stderr, "FAIL tcsetattr %d  %s\n", speed, strerror(errno));
+		fprintf (stderr, "FAIL cfsetispeed %d  %s\n", speed, strerror(errno));
 		error = errno;
 		return false;
 	}
