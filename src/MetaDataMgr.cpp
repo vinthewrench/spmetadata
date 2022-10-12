@@ -19,7 +19,7 @@
 
 #include "dbuf.hpp"
 
-#define DEBUG_HEX 1
+#define DEBUG_HEX 0
 
 #if DEBUG_HEX
 
@@ -175,7 +175,7 @@ bool MetaDataMgr::begin(const char* metapath, const char* portpath, speed_t spee
 	
 	_isSetup  = openOutput(portpath, speed, error);
  
-	printf("Start MetaData reader  %s\n", _isSetup?"Success":"fail");
+//	printf("Start MetaData reader  %s\n", _isSetup?"Success":"fail");
 	
 	
 	return _isSetup;
@@ -380,21 +380,18 @@ void MetaDataMgr::MetaDataReader(){
 							if(std::getline(_ifs, line) ){
 								
 								if(shouldProcessPacket){
-									printf("processed %s %s \n",typestring, codestring);
+									//								printf("processed %s %s \n",typestring, codestring);
 									
 									auto input_length = line.find("</data>");
 									if(input_length != std::string::npos){
 										
 										payload = line.substr(0,input_length);
 										payload = trimCNTRL(payload);
-										
-									}
+ 									}
 								}
-								
-							}
+ 							}
 						}
-						
-					}
+ 					}
 					
 					// filter out only the packets I want
 					if(shouldProcessPacket){
@@ -408,25 +405,7 @@ void MetaDataMgr::MetaDataReader(){
 						sprintf( header, ",%hu\n",checksum);
 						outBuffer.append_data(header, strlen(header));
 						writePacket(outBuffer.data(), outBuffer.size());
-						
-						
-						{
-							string str = string((char*)outBuffer.data(), outBuffer.size());
- 							size_t loc = 	find_nth(str, 0, ",",  2);
-							if(loc != string::npos){
-								uint8_t 	CK_A = 0;
-								uint8_t 	CK_B = 0;
-
-		 						for(char c : str.substr(0, loc)){
-									CK_A += c;
-									CK_B += CK_A;
-								}
-								uint16_t checksum1 = (CK_A << 8 ) | CK_B;
-								
-								printf("checksum = %u  %s \n", checksum1, checksum == checksum1? "OK":"FAIL");
-							}
-						}
-					}
+	 				}
 					
 				}
 				if(_isSetup && _isRunning)
