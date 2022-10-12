@@ -78,3 +78,20 @@ bool dbuf::reserve(size_t len){
 	return true;
 }
 
+
+uint16_t dbuf::calculateChecksum(){
+ 
+	// The checksum is calculated over the message, starting and including the $,
+	//but excluding, the checksum fields
+	// The checksum algorithm used is the 8-bit Fletcher algorithm, which is used in the
+	// TCP standard RFC 1145 .  https://www.ietf.org/rfc/rfc1145.txt
+	uint8_t 	CK_A = 0;
+	uint8_t 	CK_B = 0;
+	for(size_t i = 0; i < _used;  i++){
+		
+		 CK_A += _data[i];
+		 CK_B += CK_A;
+	}
+	
+	return( (CK_A << 8 ) | CK_B);
+}

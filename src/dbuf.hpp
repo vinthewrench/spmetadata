@@ -35,6 +35,8 @@ public:
 	size_t size() { return _used;};
 	uint8_t *data () { return _data;};
 	
+	uint16_t calculateChecksum();
+	
 private:
 	
 	size_t  	_pos;			// cursor pos

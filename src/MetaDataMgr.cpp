@@ -291,6 +291,9 @@ bool MetaDataMgr::writePacket(const uint8_t * data, size_t len ){
 
 //	printf("send %2zu %.*s",  len, (int)len, data);
 
+	
+	dumpHex((uint8_t*) data, len,0);
+
 #if  defined(__APPLE__)
 	success = true;
 //	printf("\n");
@@ -321,6 +324,15 @@ inline  std::string trimCNTRL(std::string source) {
 	  return source;
  }
 
+inline size_t find_nth(const  std::string& haystack, size_t pos, const  std::string& needle, size_t nth)
+{
+	 size_t found_pos = haystack.find(needle, pos);
+	 if(0 == nth ||  std::string::npos == found_pos)  return found_pos;
+	 return find_nth(haystack, found_pos+1, needle, nth-1);
+}
+
+
+ 
 void MetaDataMgr::MetaDataReader(){
 	
 	dbuf outBuffer;
@@ -391,11 +403,29 @@ void MetaDataMgr::MetaDataReader(){
 						sprintf( header, "$%s,%s,",typestring,codestring);
 						outBuffer.append_data(header, strlen(header));
 						outBuffer.append_data( (void*) payload.c_str(), payload.size());
-						outBuffer.append_char('\n');
+						
+						uint16_t checksum = outBuffer.calculateChecksum();
+						sprintf( header, ",%hu\n",checksum);
+						outBuffer.append_data(header, strlen(header));
 						writePacket(outBuffer.data(), outBuffer.size());
 						
-						dumpHex(outBuffer.data(), outBuffer.size(),0);
 						
+						{
+							string str = string((char*)outBuffer.data(), outBuffer.size());
+ 							size_t loc = 	find_nth(str, 0, ",",  2);
+							if(loc != string::npos){
+								uint8_t 	CK_A = 0;
+								uint8_t 	CK_B = 0;
+
+		 						for(char c : str.substr(0, loc)){
+									CK_A += c;
+									CK_B += CK_A;
+								}
+								uint16_t checksum1 = (CK_A << 8 ) | CK_B;
+								
+								printf("checksum = %u  %s \n", checksum1, checksum == checksum1? "OK":"FAIL");
+							}
+						}
 					}
 					
 				}
