@@ -175,6 +175,9 @@ bool MetaDataMgr::begin(const char* metapath, const char* portpath, speed_t spee
 	
 	_isSetup  = openOutput(portpath, speed, error);
  
+	printf("Start MetaData reader  %s\n", _isSetup?"Success":"fail");
+	
+	
 	return _isSetup;
   }
 

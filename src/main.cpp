@@ -30,9 +30,7 @@ int main(int argc, const char * argv[]) {
 	MetaDataMgr* mgr 	= MetaDataMgr::shared();
 
 	 
-	printf("Start MetaData reader\n");
-	
-	
+
 	try {
 		int error = 0;
 
