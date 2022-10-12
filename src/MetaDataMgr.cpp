@@ -19,7 +19,7 @@
 
 #include "dbuf.hpp"
 
-#define DEBUG_HEX 0
+#define DEBUG_HEX 1
 
 #if DEBUG_HEX
 
@@ -322,97 +322,97 @@ inline  std::string trimCNTRL(std::string source) {
  }
 
 void MetaDataMgr::MetaDataReader(){
-
+	
 	dbuf outBuffer;
 	
-	  while(_isRunning){
-		   
-		  // if not setup // check back later
-		  if(!_isSetup){
-			  sleep(2);
-			  continue;
-		  }
+	while(_isRunning){
 		
-		  try{
- 
-			  if(!_ifs.is_open()){
-				  _ifs.open(_metaDataFilePath, ios::in);
-				  
-				  if(!_ifs.is_open()) {
-					  sleep(1);
-					  continue;
-				  }
-			  }
-			  
-			  string line;
-			  
-			  while ( std::getline(_ifs, line) ) {
-				  
-				  uint32_t type, code;
-				  uint32_t length;
-				  
-				  int ret = sscanf(line.c_str(),"<item><type>%8x</type><code>%8x</code><length>%u</length>",&type,&code,&length);
-				  if (ret==3) {
-					  
-					  if(std::getline(_ifs, line) ){
-						  if(line == "<data encoding=\"base64\">") {
-							  
-							  if(std::getline(_ifs, line) ){
-								  
-								  char typestring[5];
-								  *(uint32_t*)typestring = htonl(type);
-								  typestring[4]=0;
-								  char codestring[5];
-								  *(uint32_t*)codestring = htonl(code);
-								  codestring[4]=0;
-								  
-								  
-								  // filter out for only the packets I want..
-								  if(sInFilterTable( type, code)){
-									  
-									  printf("processed %s %s \n",typestring, codestring);
-									  
-									  auto input_length = line.find("</data>");
-									  if(input_length != std::string::npos){
-										  
-										  string payload = line.substr(0,input_length);
-										  payload = trimCNTRL(payload);
-										  
-										  outBuffer.reset();
-										  char header[16];
-										  sprintf( header, "$%s,%s,",typestring,codestring);
-										  outBuffer.append_data(header, strlen(header));
-										  outBuffer.append_data( (void*) payload.c_str(), payload.size());
-										  outBuffer.append_char('\n');
-										  writePacket(outBuffer.data(), outBuffer.size());
-										  
-										  dumpHex(outBuffer.data(), outBuffer.size(),0);
-									  }
-									  
-								  }
-								  else {
-									  printf("NOT processed %s %s \n",typestring, codestring);
-								  }
-							  }
-						  }
-						  
-						  
-					  }
-				  }
-				  if(_isSetup && _isRunning)
-					  break;
-			  }
-			  
-		  }
- 		  catch(std::ifstream::failure &err) {
-			  printf("MetaDataReader:FAIL: %s", err.what());
- 		  }
-		   
-		  if(!_ifs.is_open()) {
-			  _ifs.close();
-		  }
-	  }
-	  
+		// if not setup // check back later
+		if(!_isSetup){
+			sleep(2);
+			continue;
+		}
+		
+		try{
+			
+			if(!_ifs.is_open()){
+				_ifs.open(_metaDataFilePath, ios::in);
+				
+				if(!_ifs.is_open()) {
+					sleep(1);
+					continue;
+				}
+			}
+			
+			string line;
+			
+			while ( std::getline(_ifs, line) ) {
+				
+				uint32_t type, code;
+				uint32_t length;
+				
+				int ret = sscanf(line.c_str(),"<item><type>%8x</type><code>%8x</code><length>%u</length>",&type,&code,&length);
+				if (ret==3) {
+					
+					bool shouldProcessPacket  = sInFilterTable( type, code);
+					char typestring[5] = {0};
+					char codestring[5] = {0};
+					string payload = "";
+					
+					*(uint32_t*)typestring = htonl(type);
+					*(uint32_t*)codestring = htonl(code);
+					
+					if(length && std::getline(_ifs, line) ){
+						if(line == "<data encoding=\"base64\">") {
+							
+							if(std::getline(_ifs, line) ){
+								
+								if(shouldProcessPacket){
+									printf("processed %s %s \n",typestring, codestring);
+									
+									auto input_length = line.find("</data>");
+									if(input_length != std::string::npos){
+										
+										payload = line.substr(0,input_length);
+										payload = trimCNTRL(payload);
+										
+									}
+								}
+								
+							}
+						}
+						
+					}
+					
+					// filter out only the packets I want
+					if(shouldProcessPacket){
+						outBuffer.reset();
+						char header[16];
+						sprintf( header, "$%s,%s,",typestring,codestring);
+						outBuffer.append_data(header, strlen(header));
+						outBuffer.append_data( (void*) payload.c_str(), payload.size());
+						outBuffer.append_char('\n');
+						writePacket(outBuffer.data(), outBuffer.size());
+						
+						dumpHex(outBuffer.data(), outBuffer.size(),0);
+						
+					}
+					
+				}
+				if(_isSetup && _isRunning)
+					break;
+			}
+			
+		}
+		catch(std::ifstream::failure &err) {
+			printf("MetaDataReader:FAIL: %s", err.what());
+		}
+		
+		if(!_ifs.is_open()) {
+			_ifs.close();
+		}
+	}
+	
 }
 
 
