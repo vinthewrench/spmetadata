@@ -90,8 +90,7 @@ static filter_table_t filter_table[] = {
 	
 	{'ssnc', 'mden'}, //  Metadata stream processing end
 	{'ssnc', 'mdst'}, //  Metadata stream processing start
-	
-	
+	 
 	{'ssnc', 'aend'},	// airplay session begin
 	{'ssnc', 'abeg'},	// airplay session end
 	
