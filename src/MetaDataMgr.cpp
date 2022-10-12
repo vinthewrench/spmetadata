@@ -353,51 +353,50 @@ void MetaDataMgr::MetaDataReader(){
 				  
 				  int ret = sscanf(line.c_str(),"<item><type>%8x</type><code>%8x</code><length>%u</length>",&type,&code,&length);
 				  if (ret==3) {
-					  if (length>0) {
-						  
-						  if(std::getline(_ifs, line) ){
-							  if(line == "<data encoding=\"base64\">") {
+					  
+					  if(std::getline(_ifs, line) ){
+						  if(line == "<data encoding=\"base64\">") {
+							  
+							  if(std::getline(_ifs, line) ){
 								  
-								  if(std::getline(_ifs, line) ){
+								  char typestring[5];
+								  *(uint32_t*)typestring = htonl(type);
+								  typestring[4]=0;
+								  char codestring[5];
+								  *(uint32_t*)codestring = htonl(code);
+								  codestring[4]=0;
+								  
+								  
+								  // filter out for only the packets I want..
+								  if(sInFilterTable( type, code)){
 									  
-									  char typestring[5];
-									  *(uint32_t*)typestring = htonl(type);
-									  typestring[4]=0;
-									  char codestring[5];
-									  *(uint32_t*)codestring = htonl(code);
-									  codestring[4]=0;
-
- 									  
-									  // filter out for only the packets I want..
-									  if(sInFilterTable( type, code)){
-	 
-										  printf("processed %s %s \n",typestring, codestring);
-	
-										  auto input_length = line.find("</data>");
-										  if(input_length != std::string::npos){
-											  
-											  string payload = line.substr(0,input_length);
-											  payload = trimCNTRL(payload);
-											 
-											  outBuffer.reset();
-											  char header[16];
-		 									  sprintf( header, "$%s,%s,",typestring,codestring);
-											  outBuffer.append_data(header, strlen(header));
-											  outBuffer.append_data( (void*) payload.c_str(), payload.size());
-											  outBuffer.append_char('\n');
- 											  writePacket(outBuffer.data(), outBuffer.size());
-											  
-											  dumpHex(outBuffer.data(), outBuffer.size(),0);
-										  }
+									  printf("processed %s %s \n",typestring, codestring);
+									  
+									  auto input_length = line.find("</data>");
+									  if(input_length != std::string::npos){
 										  
+										  string payload = line.substr(0,input_length);
+										  payload = trimCNTRL(payload);
+										  
+										  outBuffer.reset();
+										  char header[16];
+										  sprintf( header, "$%s,%s,",typestring,codestring);
+										  outBuffer.append_data(header, strlen(header));
+										  outBuffer.append_data( (void*) payload.c_str(), payload.size());
+										  outBuffer.append_char('\n');
+										  writePacket(outBuffer.data(), outBuffer.size());
+										  
+										  dumpHex(outBuffer.data(), outBuffer.size(),0);
 									  }
-									  else {
- 										  printf("NOT processed %s %s \n",typestring, codestring);
- 									  }
+									  
+								  }
+								  else {
+									  printf("NOT processed %s %s \n",typestring, codestring);
 								  }
 							  }
 						  }
-								  
+						  
+						  
 					  }
 				  }
 				  if(_isSetup && _isRunning)
