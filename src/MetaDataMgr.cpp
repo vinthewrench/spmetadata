@@ -368,6 +368,8 @@ void MetaDataMgr::MetaDataReader(){
 									  // filter out for only the packets I want..
 									  if(sInFilterTable( type, code)){
 	 
+										  printf("processed %s %s \n",typestring, codestring);
+	
 										  auto input_length = line.find("</data>");
 										  if(input_length != std::string::npos){
 											  
@@ -387,7 +389,7 @@ void MetaDataMgr::MetaDataReader(){
 										  
 									  }
 									  else {
-	//									  printf("%s %s \n",typestring, codestring);
+	//									  printf("NOT processed %s %s \n",typestring, codestring);
  									  }
 								  }
 							  }
