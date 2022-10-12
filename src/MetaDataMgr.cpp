@@ -277,7 +277,7 @@ bool MetaDataMgr::openOutput(const char* path, speed_t speed, int &error){
 		return false;
 	}
 
-	printf("openOutput %s at speed %u \n", path, speed);
+//	printf("openOutput %s at speed %u \n", path, speed);
 
 	_fd = fd;
 	return true;
