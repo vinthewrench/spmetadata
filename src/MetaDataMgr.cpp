@@ -392,7 +392,7 @@ void MetaDataMgr::MetaDataReader(){
 										  
 									  }
 									  else {
-	//									  printf("NOT processed %s %s \n",typestring, codestring);
+ 										  printf("NOT processed %s %s \n",typestring, codestring);
  									  }
 								  }
 							  }
